@@ -1,13 +1,10 @@
 "use strict"
-import {head} from "./objects/head.js"
-/*--------------------------------------------------------------------------------
 
+/*--------------------------------------------------------------------------------
 The proportions below just happen to match the dimensions of my physical space
 and the tables in that space.
-
 Note that I measured everything in inches, and then converted to units of meters
 (which is what VR requires) by multiplying by 0.0254.
-
 --------------------------------------------------------------------------------*/
 
 const inchesToMeters = inches => inches * 0.0254;
@@ -24,6 +21,7 @@ const TABLE_THICKNESS  = inchesToMeters( 11/8);
 const LEG_THICKNESS    = inchesToMeters(  2.5);
 
 let enableModeler = true;
+
 /*Example Grabble Object*/
 let grabbableCube = new Obj(CG.torus);
 
@@ -40,12 +38,10 @@ const WOOD = 0,
 let noise = new ImprovedNoise();
 let m = new Matrix();
 
-
 let world = new World();
+
 /* 
-
 // add environment objects
-
 let box = {
    shape : "cube",
    pos : [0, 0, 0],
@@ -55,9 +51,7 @@ let box = {
    textureScale : 1
 };
 world.addEnv(box);
-
 // add player created objects
-
 for (let i=-2; i<=2; i++) {
    for (let j=-2; j<=2; j++) {
       let s = {
@@ -80,26 +74,20 @@ for (let i=-2; i<=2; i++) {
       world.add(s2);
    }
 }
-
 */
 
-
 /*--------------------------------------------------------------------------------
-
 I wrote the following to create an abstraction on top of the left and right
 controllers, so that in the onStartFrame() function we can detect press()
 and release() events when the user depresses and releases the trigger.
-
 The field detecting the trigger being pressed is buttons[1].pressed.
 You can detect pressing of the other buttons by replacing the index 1
 by indices 0 through 5.
-
 You might want to try more advanced things with the controllers.
 As we discussed in class, there are many more fields in the Gamepad object,
 such as linear and angular velocity and acceleration. Using the browser
 based debugging tool, you can do something like console.log(leftController)
 to see what the options are.
-
 --------------------------------------------------------------------------------*/
 
 function HeadsetHandler(headset) {
@@ -108,18 +96,28 @@ function HeadsetHandler(headset) {
 }
 
 function ControllerHandler(controller) {
+   this.isBY   = () => controller.buttons[4].pressed;
+   this.isAX   = () => controller.buttons[3].pressed;
+   this.isGripped   = () => controller.buttons[2].pressed;
    this.isDown      = () => controller.buttons[1].pressed;
    this.onEndFrame  = () => wasDown = this.isDown();
    this.orientation = () => controller.pose.orientation;
    this.position    = () => controller.pose.position;
    this.press       = () => ! wasDown && this.isDown();
    this.release     = () => wasDown && ! this.isDown();
+   this.pressGrip       = () => ! wasGripped && this.isGripped();
+   //this.releaseGrip     = () => wasGripped && ! this.isGripped();
+   this.pressAX       = () => ! wasAX && this.isAX();
+   //this.releaseAX     = () => wasAX && ! this.isAX();
+   this.pressBY       = () => ! wasBY && this.isBY();
+   //this.releaseBY     = () => wasBY && ! this.isBY();
    this.tip         = () => {
       let P = this.position();          // THIS CODE JUST MOVES
       m.identity();                     // THE "HOT SPOT" OF THE
-      m.translate(P[0],P[1],P[2]);      // CONTROLLER TOWARD ITS
+      m.translate(P[0], P[1], P[2]);    // CONTROLLER TOWARD ITS
       m.rotateQ(this.orientation());    // FAR TIP (FURTHER AWAY
-      m.translate(0,0,-.03);            // FROM THE USER'S HAND).
+      m.translate(0,.03,-.03);  
+                // FROM THE USER'S HAND).
       let v = m.value();
       return [v[12],v[13],v[14]];
    }
@@ -133,7 +131,12 @@ function ControllerHandler(controller) {
       return [v[12],v[13],v[14]];
    }
    let wasDown = false;
+   let wasGripped = false;
+   let wasAX = false;
+   let wasBY = false;
 }
+
+let LC, RC, isNewObj;
 
 // (New Info): constants can be reloaded without worry
 // let VERTEX_SIZE = 8;
@@ -335,12 +338,10 @@ async function setup(state) {
 
 
    /************************************************************************
-
    Here we show an example of how to create a grabbable object.
    First instatiate object using Obj() constructor, and add the following  
    variables. Then send a spawn message. This will allow the server to keep
    track of objects that need to be synchronized.
-
    ************************************************************************/
 
    MR.objs.push(grabbableCube);
@@ -352,9 +353,7 @@ async function setup(state) {
 }
 
 /************************************************************************
-
 This is an example of a spawn message we send to the server.
-
 ************************************************************************/
 
 function sendSpawnMessage(object){
@@ -375,16 +374,13 @@ function sendSpawnMessage(object){
 function onStartFrame(t, state) {
 
    /*-----------------------------------------------------------------
-
    Whenever the user enters VR Mode, create the left and right
    controller handlers.
-
    Also, for my particular use, I have set up a particular transformation
    so that the virtual room would match my physical room, putting the
    resulting matrix into state.calibrate. If you want to do something
    similar, you would need to do a different calculation based on your
    particular physical room.
-
    -----------------------------------------------------------------*/
 
    const input  = state.input;
@@ -456,26 +452,29 @@ function onStartFrame(t, state) {
    gl.enable(gl.CULL_FACE);
 
    /*-----------------------------------------------------------------
-
    Below is the logic for my little toy geometric modeler example.
    You should do something more or different for your assignment. 
    Try modifying the size or color or texture of objects. Try
    deleting objects or adding constraints to make objects align
    when you bring them together. Try adding controls to animate
    objects. There are lots of possibilities.
-
    -----------------------------------------------------------------*/
+
    if (enableModeler && input.LC) {
-    if (input.LC.isDown()) {
+      let shapeChoice;
+      if (input.LC.isDown()) {
          menuChoice = findInMenu(input.LC.position(), input.RC.tip());
+
          if (menuChoice >= 0 && input.RC.press()) {
+            shapeChoice = menuChoice;
             state.isNewObj = true;
                let newObject = new Obj(menuShape[menuChoice]);
-               /*Should you want to support grabbing, refer to the
-               above example in setup()*/ 
+               //Should you want to support grabbing, refer to the
+               //above example in setup()
             MR.objs.push(newObject);
                sendSpawnMessage(newObject);
          }
+
       }
       if (state.isNewObj) {
          let obj = MR.objs[MR.objs.length - 1];
@@ -483,7 +482,43 @@ function onStartFrame(t, state) {
          obj.orientation = input.RC.orientation().slice();
          //Create lock object for each new obj.
          obj.lock = new Lock();
+
+         obj.color = 0;
+         obj.rotateXAmount = 0;
+         obj.rotateYAmount = 0;
+         obj.scale = false;
+
+         if (input.RC.isAX()) {
+            obj.cIndex = 1;          
+         }
+         if (input.RC.isBY()) {
+            obj.cIndex = 2;                   
+         }
+         if (input.LC.isAX()) { 
+            obj.cIndex = 3;           
+         }  
+         if (input.LC.isBY()) { 
+            obj.cIndex = 4;           
+         }
+         if (input.LC.isGripped()) {
+            obj.rotateXAmount += 1.5;            
+         }
+         if (input.RC.isGripped()) {
+            obj.scale = true;           
+         }
+
+         let args = {
+            shape : menuShapeStr[shapeChoice],
+            free : true,
+            pos : [obj.position[0], obj.position[1], obj.position[2]],
+            size : [.03,.03,.03],
+            color : colors[obj.cIndex]
+         }
+
+         world.add(args);
       }
+
+
       else if (input.RC.isDown()){
          createIcing( input.RC.tip().slice(), world);
       }
@@ -492,54 +527,51 @@ function onStartFrame(t, state) {
          resetDrawingPath();
    }
 
-   if (input.LC) {
-      let LP = input.LC.center();
-      let RP = input.RC.center();
-      let D  = CG.subtract(LP, RP);
-      let d  = metersToInches(CG.norm(D));
-      let getX = C => {
-         m.save();
-            m.identity();
-            m.rotateQ(CG.matrixFromQuaternion(C.orientation()));
-            m.rotateX(.75);
-            let x = (m.value())[1];
-         m.restore();
-         return x;
-      }
-      let lx = getX(input.LC);
-      let rx = getX(input.RC);
-      let sep = metersToInches(TABLE_DEPTH - 2 * RING_RADIUS);
-      if (d >= sep - 1 && d <= sep + 1 && Math.abs(lx) < .03 && Math.abs(rx) < .03) {
-         if (state.calibrationCount === undefined)
-            state.calibrationCount = 0;
-         if (++state.calibrationCount == 30) {
-            m.save();
-               m.identity();
-               m.translate(CG.mix(LP, RP, .5));
-               m.rotateY(Math.atan2(D[0], D[2]) + Math.PI/2);
-               m.translate(-2.35,1.00,-.72);
-               state.avatarMatrixForward = CG.matrixInverse(m.value());
-               state.avatarMatrixInverse = m.value();
-            m.restore();
-            state.calibrationCount = 0;
-         }
-      }
-   }
-
+   
+   // if (input.LC) {
+   //    let LP = input.LC.center();
+   //    let RP = input.RC.center();
+   //    let D  = CG.subtract(LP, RP);
+   //    let d  = metersToInches(CG.norm(D));
+   //    let getX = C => {
+   //       m.save();
+   //          m.identity();
+   //          m.rotateQ(CG.matrixFromQuaternion(C.orientation()));
+   //          m.rotateX(.75);
+   //          let x = (m.value())[1];
+   //       m.restore();
+   //       return x;
+   //    }
+   //    let lx = getX(input.LC);
+   //    let rx = getX(input.RC);
+   //    let sep = metersToInches(TABLE_DEPTH - 2 * RING_RADIUS);
+   //    if (d >= sep - 1 && d <= sep + 1 && Math.abs(lx) < .03 && Math.abs(rx) < .03) {
+   //       if (state.calibrationCount === undefined)
+   //          state.calibrationCount = 0;
+   //       if (++state.calibrationCount == 30) {
+   //          m.save();
+   //             m.identity();
+   //             m.translate(CG.mix(LP, RP, .5));
+   //             m.rotateY(Math.atan2(D[0], D[2]) + Math.PI/2);
+   //             m.translate(-2.35,1.00,-.72);
+   //             state.avatarMatrixForward = CG.matrixInverse(m.value());
+   //             state.avatarMatrixInverse = m.value();
+   //          m.restore();
+   //          state.calibrationCount = 0;
+   //       }
+   //    }
+   // }
+   
     /*-----------------------------------------------------------------
-
     This function releases stale locks. Stale locks are locks that
     a user has already lost ownership over by letting go
-
     -----------------------------------------------------------------*/
 
     releaseLocks(state);
 
     /*-----------------------------------------------------------------
-
     This function checks for intersection and if user has ownership over 
     object then sends a data stream of position and orientation.
-
     -----------------------------------------------------------------*/
 
     pollGrab(state);
@@ -551,17 +583,15 @@ function onStartFrame(t, state) {
 let menuX = [-.2,-.1,-.2,-.1];
 let menuY = [ .1, .1,  0,  0];
 let menuShape = [ CG.cube, CG.sphere, CG.cylinder, CG.torus ];
+let menuShapeStr = [ "cube", "sphere", "cylinder", "torus" ];
 let menuChoice = -1;
 
 /*-----------------------------------------------------------------
-
 If the controller tip is near to a menu item, return the index
 of that item. If the controller tip is not near to any menu
 item, return -1.
-
 mp == position of the menu origin (position of the right controller).
 p  == the position of the left controller tip.
-
 -----------------------------------------------------------------*/
 
 let findInMenu = (mp, p) => {
@@ -570,18 +600,36 @@ let findInMenu = (mp, p) => {
    let z = p[2] - mp[2];
    for (let n = 0 ; n < 4 ; n++) {
       let dx = x + menuX[n];
-      let dy = y + menuY[n];
+      let dy = y - menuY[n];
       let dz = z;
-      if (dx * dx + dy * dy + dz * dz < .03 * .03)
+      if (dx * dx + dy * dy + dz * dz < .04 * .04)
          return n;
    }
    return -1;
 }
 
+/*
 function Obj(shape) {
    this.shape = shape;
 };
+*/
 
+function Obj(shape, rotateXAmount, rotateYAmount, color, scale, cIndex) {
+   this.shape = shape;
+   this.rotateXAmount = rotateXAmount;
+   this.rotateYAmount = rotateYAmount;
+   this.color = color;
+   this.scale = scale;
+   this.cIndex  = 0;
+
+};
+
+
+let colors = [[0,0,0],[1,0,0],[0,1,0],[0,0,1],[.5,.5,.5]];
+let idx = 0;
+let rotateXAmount = 0;
+let rotateYAmount = 0;
+let scale = false;
 
 function onDraw(t, projMat, viewMat, state, eyeIdx) {
    m.identity();
@@ -612,15 +660,12 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
    const input  = state.input;
 
     /*-----------------------------------------------------------------
-
     The drawShape() function below is optimized in that it only downloads
     new vertices to the GPU if the vertices (the "shape" argument) have
     changed since the previous call.
-
     Also, currently we only draw gl.TRIANGLES if this is a cube. In all
     other cases, we draw gl.TRIANGLE_STRIP. You might want to change
     this if you create other kinds of shapes that are not triangle strips.
-
     -----------------------------------------------------------------*/
 
    let drawShape = (shape, color, texture, textureScale) => {
@@ -652,12 +697,10 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
    }
 
     /*-----------------------------------------------------------------
-
     In my little toy geometric modeler, the pop-up menu of objects only
     appears while the right controller trigger is pressed. This is just
     an example. Feel free to change things, depending on what you are
     trying to do in your homework.
-
     -----------------------------------------------------------------*/
 
    let showMenu = p => {
@@ -665,19 +708,17 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
       for (let n = 0 ; n < 4 ; n++) {
          m.save();
             m.multiply(state.avatarMatrixForward);
-            m.translate(x - menuX[n], y - menuY[n], z);
+            m.translate(x - menuX[n], y + menuY[n], z);
             m.scale(.03, .03, .03);
-            drawShape(menuShape[n], n == menuChoice ? [1,.5,.5] : [1,1,1]);
+            drawShape(menuShape[n], n == menuChoice ? [.5,1,.5] : [1,1,1]);
          m.restore();
       }
    }
 
     /*-----------------------------------------------------------------
-
     drawTable() just happens to model the physical size and shape of the
     tables in my lab (measured in meters). If you want to model physical
     furniture, you will probably want to do something different.
-
     -----------------------------------------------------------------*/
 
    let drawTable = id => {
@@ -702,17 +743,14 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
    }
 
     /*-----------------------------------------------------------------
-
     The below is just my particular "programmer art" for the size and
     shape of a controller. Feel free to create a different appearance
     for the controller. You might also want the controller appearance,
     as well as the way it animates when you press the trigger or other
     buttons, to change with different functionality.
-
     For example, you might want to have one appearance when using it as
     a selection tool, a resizing tool, a tool for drawing in the air,
     and so forth.
-
     -----------------------------------------------------------------*/
     
    let drawHeadset = (position, orientation) => {
@@ -738,36 +776,53 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
       m.restore();
    }
 
-   let drawController = (C, hand) => {
-      let P = C.position();
-      m.save();
+
+   let drawController = (C, color) => {
+       let P = C.position(), s = C.isDown() ? .0125 : .0225;
+       
+       m.save();
          m.multiply(state.avatarMatrixForward);
-         m.translate(P[0],P[1],P[2]);
-         m.rotateQ(C.orientation());
-         m.translate(0,.02,-.005);
-         m.rotateX(.75);
-         m.save();
-            m.translate(0,0,-.0095).scale(.004,.004,.003);
-            drawShape(CG.sphere, C.isDown() ? [10,0,0] : [.5,0,0]);
-         m.restore();
-         m.save();
-            m.translate(0,0,-.01).scale(.04,.04,.13);
-            drawShape(CG.torus1, [0,0,0]);
-         m.restore();
-         m.save();
-            m.translate(0,-.0135,-.008).scale(.04,.0235,.0015);
-            drawShape(CG.cylinder, [0,0,0]);
-         m.restore();
-         m.save();
-            m.translate(0,-.01,.03).scale(.012,.02,.037);
-            drawShape(CG.cylinder, [0,0,0]);
-         m.restore();
-         m.save();
-            m.translate(0,-.01,.067).scale(.012,.02,.023);
-            drawShape(CG.sphere, [0,0,0]);
-         m.restore();
-      m.restore();
-   }
+          m.translate(P[0], P[1], P[2]);
+          m.rotateQ(C.orientation());
+          /*
+            m.save();
+                m.translate(-s,0,.001);
+                m.scale(.0125,.016,.036);
+              drawShape(cube, color);
+            m.restore();
+          
+            m.save();
+                m.translate( s,0,.001);
+                m.scale(.0125,.016,.036);
+              drawShape(cube, color);
+            m.restore();
+          */
+            m.save();
+                m.translate(0,0,.025);
+                m.scale(.015,.015,.01);
+              //drawShape(cube, [0,0,0]);
+            m.restore();
+
+            m.save();
+                m.translate(0,0,.035);
+                m.rotateX(.5);
+                m.save();
+                    m.translate(0,-.001,.035);
+                    m.scale(.014,.014,.042);
+                  //drawShape(cylinder, [0,0,0]);
+                m.restore();
+                m.save();
+                    m.translate(0,-.001,.077);
+                    //m.scale(.014,.014,.014);
+                   m.scale(.1,.1,.1);
+                   m.scale(.5,.5,1);
+                   m.rotateX(-.7);
+                  drawShape(CG.sphere, [.7,.3,0]);
+                m.restore();
+            m.restore();
+
+       m.restore();
+    }
 
    let drawSyncController = (pos, rot, color) => {
       let P = pos;
@@ -799,6 +854,7 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
       m.restore();
    }
 
+
    if (input.LC) {
       if (isMiniature)
          drawHeadset(input.HS.position(), input.HS.orientation());
@@ -816,41 +872,47 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
       m.restore();
    }
 
-
     /*-----------------------------------------------------------------
-
     This is where I draw the objects that have been created.
-
     If I were to make these objects interactive (that is, responsive
     to the user doing things with the controllers), that logic would
     need to go into onStartFrame(), not here.
-
     -----------------------------------------------------------------*/
 
-   for (let n = 0 ; n < MR.objs.length ; n++) {
-      let obj = MR.objs[n], P = obj.position;
-      m.save();
-         m.multiply(state.avatarMatrixForward);
-         m.translate(P[0], P[1], P[2]);
-         m.rotateQ(obj.orientation);
-         m.scale(.03,.03,.03);
-         drawShape(obj.shape, [1,1,1]);
+    m.save();
+    m.multiply(state.avatarMatrixForward);
+    world.draw(m, drawShape);
+    m.restore();
+
+   // for (let n = 0 ; n < MR.objs.length ; n++) {
+   //    let obj = MR.objs[n], P = obj.position;
+   //    m.save();
+   //       m.multiply(state.avatarMatrixForward);
+
+   //       // draw world
+   //       world.draw(m, drawShape);
+   //       m.translate(P[0], P[1], P[2]);
+   //       // m.rotateQ(obj.orientation);
+   //       m.scale(.03,.03,.03);
+
+   //        m.rotateX(obj.rotateXAmount);
+          
+   //        if (obj.scale) {
+   //          m.scale(2,2,2);
+   //          drawShape(obj.shape, colors[obj.cIndex]);
+   //        } else {
+   //          drawShape(obj.shape, colors[obj.cIndex]);
+   //        }
          
-      m.restore();
-   }
-
-
-   // draw world
-   world.draw(m, drawShape);
+   //    m.restore();
+   // }
 
    m.translate(0, -EYE_HEIGHT, 0);
  
     /*-----------------------------------------------------------------
-
     Notice that I make the room itself as an inside-out cube, by
     scaling x,y and z by negative amounts. This negative scaling
     is a useful general trick for creating interiors.
-
     -----------------------------------------------------------------*/
 
    m.save();
@@ -871,6 +933,7 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
    m.restore();
 
    // DRAW TEST SHAPE
+
    m.save();
       m.translate(0, 2 * TABLE_HEIGHT, (TABLE_DEPTH - HALL_WIDTH) / 2);
       //m.aimZ([Math.cos(state.time),Math.sin(state.time),0]);
@@ -886,22 +949,15 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
       m.save();
       m.translate(-.5, 2.5 * TABLE_HEIGHT, (TABLE_DEPTH - HALL_WIDTH) / 2);
       //m.rotateY(state.time);
-      
-      m.save();
-
-         let reader = new Reader();
-         
-         
-         m.translate(A[0],A[1],A[2]).scale(1);
-         //reader.buildAndDrawObject(head, [1,1,1],1, state,m);
-         m.scale(.04);
-      m.restore();
       /*
+      m.save();
+         m.translate(A[0],A[1],A[2]).scale(.07);
+         drawShape(CG.sphere, [1,1,1]);
+      m.restore();
       m.save();
          m.translate(B[0],B[1],B[2]).scale(.07);
          drawShape(CG.sphere, [1,1,1]);
       m.restore();
-
       m.save();
          m.translate(C[0],C[1],C[2]).scale(.07);
          drawShape(CG.sphere, [1,1,1]);
@@ -965,18 +1021,15 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
       }
    }
 
-
 }
 
 function onEndFrame(t, state) {
    pollAvatarData();
 
    /*-----------------------------------------------------------------
-
    The below two lines are necessary for making the controller handler
    logic work properly -- in particular, detecting press() and release()
    actions.
-
    -----------------------------------------------------------------*/
 
    const input  = state.input;
