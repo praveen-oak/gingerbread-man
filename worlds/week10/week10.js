@@ -1,5 +1,5 @@
 "use strict"
-
+import {head} from "./objects/head.js"
 /*--------------------------------------------------------------------------------
 
 The proportions below just happen to match the dimensions of my physical space
@@ -24,7 +24,6 @@ const TABLE_THICKNESS  = inchesToMeters( 11/8);
 const LEG_THICKNESS    = inchesToMeters(  2.5);
 
 let enableModeler = true;
-
 /*Example Grabble Object*/
 let grabbableCube = new Obj(CG.torus);
 
@@ -41,8 +40,8 @@ const WOOD = 0,
 let noise = new ImprovedNoise();
 let m = new Matrix();
 
-let world = new World();
 
+let world = new World();
 /* 
 
 // add environment objects
@@ -201,7 +200,8 @@ async function setup(state) {
    const images = await imgutil.loadImagesPromise([
       getPath("textures/wood.png"),
       getPath("textures/tiles.jpg"),
-      getPath("textures/noisy_bump.jpg")
+      getPath("textures/noisy_bump.jpg"),
+      getPath("textures/gingerbread.jpg")
    ]);
 
    let libSources = await MREditor.loadAndRegisterShaderLibrariesForLiveEditing(gl, "libs", [
@@ -863,7 +863,6 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
    m.restore();
 
    // DRAW TEST SHAPE
-
    m.save();
       m.translate(0, 2 * TABLE_HEIGHT, (TABLE_DEPTH - HALL_WIDTH) / 2);
       //m.aimZ([Math.cos(state.time),Math.sin(state.time),0]);
@@ -879,12 +878,17 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
       m.save();
       m.translate(-.5, 2.5 * TABLE_HEIGHT, (TABLE_DEPTH - HALL_WIDTH) / 2);
       //m.rotateY(state.time);
-      /*
+      
       m.save();
-         m.translate(A[0],A[1],A[2]).scale(.07);
-         drawShape(CG.sphere, [1,1,1]);
-      m.restore();
 
+         let reader = new Reader();
+         
+         
+         m.translate(A[0],A[1],A[2]).scale(1);
+         //reader.buildAndDrawObject(head, [1,1,1],1, state,m);
+         m.scale(.04);
+      m.restore();
+      /*
       m.save();
          m.translate(B[0],B[1],B[2]).scale(.07);
          drawShape(CG.sphere, [1,1,1]);
