@@ -466,9 +466,9 @@ function onStartFrame(t, state) {
 
    -----------------------------------------------------------------*/
    if (enableModeler && input.LC) {
-      if (input.RC.isDown()) {
-         menuChoice = findInMenu(input.RC.position(), input.LC.tip());
-         if (menuChoice >= 0 && input.LC.press()) {
+    if (input.LC.isDown()) {
+         menuChoice = findInMenu(input.LC.position(), input.RC.tip());
+         if (menuChoice >= 0 && input.RC.press()) {
             state.isNewObj = true;
                let newObject = new Obj(menuShape[menuChoice]);
                /*Should you want to support grabbing, refer to the
@@ -479,13 +479,17 @@ function onStartFrame(t, state) {
       }
       if (state.isNewObj) {
          let obj = MR.objs[MR.objs.length - 1];
-         obj.position    = input.LC.tip().slice();
-         obj.orientation = input.LC.orientation().slice();
+         obj.position    = input.RC.tip().slice();
+         obj.orientation = input.RC.orientation().slice();
          //Create lock object for each new obj.
          obj.lock = new Lock();
       }
-      if (input.LC.release())
+      else if (input.RC.isDown()){
+         createIcing( input.RC.tip().slice(), world);
+      }
+      if (input.RC.release())
          state.isNewObj = false;
+         resetDrawingPath();
    }
 
    if (input.LC) {
@@ -565,8 +569,8 @@ let findInMenu = (mp, p) => {
    let y = p[1] - mp[1];
    let z = p[2] - mp[2];
    for (let n = 0 ; n < 4 ; n++) {
-      let dx = x - menuX[n];
-      let dy = y - menuY[n];
+      let dx = x + menuX[n];
+      let dy = y + menuY[n];
       let dz = z;
       if (dx * dx + dy * dy + dz * dz < .03 * .03)
          return n;
@@ -661,7 +665,7 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
       for (let n = 0 ; n < 4 ; n++) {
          m.save();
             m.multiply(state.avatarMatrixForward);
-            m.translate(x + menuX[n], y + menuY[n], z);
+            m.translate(x - menuX[n], y - menuY[n], z);
             m.scale(.03, .03, .03);
             drawShape(menuShape[n], n == menuChoice ? [1,.5,.5] : [1,1,1]);
          m.restore();
@@ -807,8 +811,8 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
 
       drawController(input.LC, 0);
       drawController(input.RC, 1);
-      if (enableModeler && input.RC.isDown())
-         showMenu(input.RC.position());
+      if (enableModeler && input.LC.isDown())
+         showMenu(input.LC.position());
       m.restore();
    }
 
@@ -834,6 +838,10 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
          
       m.restore();
    }
+
+
+   // draw world
+   world.draw(m, drawShape);
 
    m.translate(0, -EYE_HEIGHT, 0);
  
@@ -957,8 +965,7 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
       }
    }
 
-   // draw world
-   world.draw(m, drawShape);
+
 }
 
 function onEndFrame(t, state) {
