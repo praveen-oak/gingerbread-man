@@ -41,6 +41,50 @@ const WOOD = 0,
 let noise = new ImprovedNoise();
 let m = new Matrix();
 
+let world = new World();
+
+/* 
+
+// add environment objects
+
+let box = {
+   shape : "cube",
+   pos : [0, 0, 0],
+   size : [1.2, 1.2, 1.2],
+   color : [1, 0, 0],
+   texture : -1,
+   textureScale : 1
+};
+world.addEnv(box);
+
+// add player created objects
+
+for (let i=-2; i<=2; i++) {
+   for (let j=-2; j<=2; j++) {
+      let s = {
+         shape : "sphere",
+         pos : [i, 4, j],
+         size : [.1, .3, .1],
+         color : [1, 1, 1],
+         texture : 0,
+         textureScale : 1,
+      };
+      let s2 = {
+         shape : "cube",
+         pos : [i, 5, j],
+         size : [.1, .1, .1],
+         color : [1, 1, 1],
+         texture : -1,
+         textureScale : 1,
+      };
+      world.add(s);
+      world.add(s2);
+   }
+}
+
+*/
+
+
 /*--------------------------------------------------------------------------------
 
 I wrote the following to create an abstraction on top of the left and right
@@ -495,6 +539,9 @@ function onStartFrame(t, state) {
     -----------------------------------------------------------------*/
 
     pollGrab(state);
+
+    // let objects drop by gravity
+    world.tick();
 }
 
 let menuX = [-.2,-.1,-.2,-.1];
@@ -905,6 +952,9 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
          drawSyncController(lpos, lcontroller.orientation, [0,1,1]);
       }
    }
+
+   // draw world
+   world.draw(m, drawShape);
 }
 
 function onEndFrame(t, state) {
