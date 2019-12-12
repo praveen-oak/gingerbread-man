@@ -330,7 +330,7 @@ async function setup(state) {
    ]);
 
    this.audioContext2 = new SpatialAudioContext([
-   'assets/audio/peacock.wav'
+   'assets/audio/squish.wav'
    ]);
 
 
@@ -997,8 +997,8 @@ function onEndFrame(t, state) {
       if (input.LC && input.LC.press())
          this.audioContext1.playFileAt('assets/audio/blop.wav', input.LC.position());
 
-      if (input.RC && input.RC.press())
-         this.audioContext2.playFileAt('assets/audio/peacock.wav', input.RC.position());
+      if (input.RC && input.RC.isDown())
+         this.audioContext2.playFileAt('assets/audio/squish.wav', input.RC.position());
    }
 
    if (input.LC) input.LC.onEndFrame();
