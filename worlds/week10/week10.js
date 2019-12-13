@@ -1,5 +1,8 @@
 "use strict"
 
+//import {gumdrop} from "./objects/gumdrop.js";
+
+
 /*--------------------------------------------------------------------------------
 The proportions below just happen to match the dimensions of my physical space
 and the tables in that space.
@@ -21,7 +24,7 @@ const TABLE_THICKNESS  = inchesToMeters( 11/8);
 const LEG_THICKNESS    = inchesToMeters(  2.5);
 
 let enableModeler = true;
-
+let gingerbreadObjs = {};
 /*Example Grabble Object*/
 let grabbableCube = new Obj(CG.torus);
 
@@ -39,6 +42,9 @@ let noise = new ImprovedNoise();
 let m = new Matrix();
 
 let world = new World();
+
+let reader = new Reader();
+CG.loadSomeFiles(reader);
 
 /* 
 // add environment objects
@@ -579,10 +585,12 @@ function onStartFrame(t, state) {
     world.tick();
 }
 
-let menuX = [-.2,-.1,-.2,-.1];
-let menuY = [ .1, .1,  0,  0];
-let menuShape = [ CG.cube, CG.sphere, CG.cylinder, CG.torus ];
-let menuShapeStr = [ "cube", "sphere", "cylinder", "torus" ];
+let menuX = [-.35,-.1,-.35,-.1];
+let menuY = [ .2, .2,  0,  0];
+let menuShape = [ CG.gumdrop, CG.wreath, CG.peppermint, CG.treelimb ];
+//let menuShapeStr = [ "cube", "sphere", "cylinder", "torus" ];
+//let menuShapeStr = [ "gumdrop", "sphere", "cylinder", "torus" ];
+let menuShapeStr = [ "gumdrop", "wreath", "peppermint", "treelimb", "candycane", "sphere"];
 let menuChoice = -1;
 
 /*-----------------------------------------------------------------
@@ -601,7 +609,7 @@ let findInMenu = (mp, p) => {
       let dx = x + menuX[n];
       let dy = y - menuY[n];
       let dz = z;
-      if (dx * dx + dy * dy + dz * dz < .04 * .04)
+      if (dx * dx + dy * dy + dz * dz < .07 * .07)
          return n;
    }
    return -1;
@@ -708,37 +716,10 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
          m.save();
             m.multiply(state.avatarMatrixForward);
             m.translate(x - menuX[n], y + menuY[n], z);
-            m.scale(.03, .03, .03);
+            m.scale(.3, .3, .3);
             drawShape(menuShape[n], n == menuChoice ? [.5,1,.5] : [1,1,1]);
          m.restore();
       }
-   }
-
-    /*-----------------------------------------------------------------
-    drawTable() just happens to model the physical size and shape of the
-    tables in my lab (measured in meters). If you want to model physical
-    furniture, you will probably want to do something different.
-    -----------------------------------------------------------------*/
-
-   let drawTable = id => {
-      m.save();
-         m.translate(0, TABLE_HEIGHT - TABLE_THICKNESS/2, 0);
-         m.scale(TABLE_DEPTH/2, TABLE_THICKNESS/2, TABLE_WIDTH/2);
-         drawShape(CG.cube, [1,1,1], 0);
-      m.restore();
-      m.save();
-         let h  = (TABLE_HEIGHT - TABLE_THICKNESS) / 2;
-         let dx = (TABLE_DEPTH  - LEG_THICKNESS  ) / 2;
-         let dz = (TABLE_WIDTH  - LEG_THICKNESS  ) / 2;
-         for (let x = -dx ; x <= dx ; x += 2 * dx)
-         for (let z = -dz ; z <= dz ; z += 2 * dz) {
-            m.save();
-               m.translate(x, h, z);
-               m.scale(LEG_THICKNESS/2, h, LEG_THICKNESS/2);
-               drawShape(CG.cube, [.5,.5,.5]);
-            m.restore();
-         }
-      m.restore();
    }
 
     /*-----------------------------------------------------------------
@@ -751,29 +732,17 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
     a selection tool, a resizing tool, a tool for drawing in the air,
     and so forth.
     -----------------------------------------------------------------*/
-    
-   let drawHeadset = (position, orientation) => {
-      //  let P = HS.position();'
-      let P = position;
 
+   let drawHeadset = (position, orientation, id) => {
+      let exists = id in gingerbreadObjs;
+      
+      if(!exists){
+         gingerbreadObjs[id] = new Gingerbread();
+      }
+      let gb = gingerbreadObjs[id];
+      let P = position;
       m.save();
-         let gb = new Gingerbread();
-         gb.drawGingerbread(m, drawShape, P, "leftController", "rightController");
-         // m.multiply(state.avatarMatrixForward);
-         // m.translate(P[0],P[1],P[2]);
-         // m.rotateQ(orientation);
-         // m.scale(.1);
-         // m.save();
-         //    m.scale(1,1.5,1);
-         //    drawShape(CG.sphere, [0,0,0]);
-         // m.restore();
-         // for (let s = -1 ; s <= 1 ; s += 2) {
-         //    m.save();
-         //       m.translate(s*.4,.2,-.8);
-         //       m.scale(.4,.4,.1);
-         //       drawShape(CG.sphere, [10,10,10]);
-         //    m.restore();
-         // }
+         gb.drawGingerbread(m, drawShape, P, orientation, "leftController", "rightController");
       m.restore();
    }
 
@@ -785,25 +754,7 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
          m.multiply(state.avatarMatrixForward);
           m.translate(P[0], P[1], P[2]);
           m.rotateQ(C.orientation());
-          /*
-            m.save();
-                m.translate(-s,0,.001);
-                m.scale(.0125,.016,.036);
-              drawShape(cube, color);
-            m.restore();
-          
-            m.save();
-                m.translate( s,0,.001);
-                m.scale(.0125,.016,.036);
-              drawShape(cube, color);
-            m.restore();
-          */
-            m.save();
-                m.translate(0,0,.025);
-                m.scale(.015,.015,.01);
-              //drawShape(cube, [0,0,0]);
-            m.restore();
-
+            
             m.save();
                 m.translate(0,0,.035);
                 m.rotateX(.5);
@@ -857,8 +808,6 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
 
 
    if (input.LC) {
-      if (isMiniature)
-         // drawHeadset(input.HS.position(), input.HS.orientation());
       m.save();
 
       let P = state.position;
@@ -885,29 +834,6 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
     world.draw(m, drawShape);
     m.restore();
 
-   // for (let n = 0 ; n < MR.objs.length ; n++) {
-   //    let obj = MR.objs[n], P = obj.position;
-   //    m.save();
-   //       m.multiply(state.avatarMatrixForward);
-
-   //       // draw world
-   //       world.draw(m, drawShape);
-   //       m.translate(P[0], P[1], P[2]);
-   //       // m.rotateQ(obj.orientation);
-   //       m.scale(.03,.03,.03);
-
-   //        m.rotateX(obj.rotateXAmount);
-          
-   //        if (obj.scale) {
-   //          m.scale(2,2,2);
-   //          drawShape(obj.shape, colors[obj.cIndex]);
-   //        } else {
-   //          drawShape(obj.shape, colors[obj.cIndex]);
-   //        }
-         
-   //    m.restore();
-   // }
-
    m.translate(0, -EYE_HEIGHT, 0);
  
     /*-----------------------------------------------------------------
@@ -923,72 +849,13 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
       drawShape(CG.cube, [1,1,1], 1,4, 2,4);
    m.restore();
 
-   m.save();
-      m.translate((HALL_WIDTH - TABLE_DEPTH) / 2, 0, 0);
-      drawTable(0);
-   m.restore();
 
-   m.save();
-      m.translate((TABLE_DEPTH - HALL_WIDTH) / 2, 0, 0);
-      drawTable(1);
-   m.restore();
-
-   // DRAW TEST SHAPE
-
-   m.save();
-      m.translate(0, 2 * TABLE_HEIGHT, (TABLE_DEPTH - HALL_WIDTH) / 2);
-      //m.aimZ([Math.cos(state.time),Math.sin(state.time),0]);
-      m.rotateY(state.time);
-      m.scale(.06,.06,.6);
-      //drawShape(lathe, [1,.2,0]);
-      m.restore();
-
-      let A = [0.2,0,0];
-      let B = [1+.4*Math.sin(2 * state.time),.4*Math.cos(2 * state.time),0];
-      let C = CG.ik(.7,.7,B,[0,-1,-2]);
-
-      m.save();
-      m.translate(-.5, 2.5 * TABLE_HEIGHT, (TABLE_DEPTH - HALL_WIDTH) / 2);
-      //m.rotateY(state.time);
-      m.save();
-         let reader = new Reader();
-         
-         
-         // m.translate(A[0],A[1],A[2]).scale(1);
-         //reader.buildAndDrawObject(head, [1,1,1],1, state,m);
-            /*
-      m.restore();
-      m.save();
-         m.translate(B[0],B[1],B[2]).scale(.07);
-         drawShape(CG.sphere, [1,1,1]);
-      m.restore();
-      m.save();
-         m.translate(C[0],C[1],C[2]).scale(.07);
-         drawShape(CG.sphere, [1,1,1]);
-      m.restore();
-      */
-      state.isToon = true;
-      let skinColor = [1,.5,.3], D;
-      m.save();
-         D = CG.mix(A,C,.5);
-         m.translate(D[0],D[1],D[2]);
-         m.aimZ(CG.subtract(A,C));
-         m.scale(.05,.05,.37);
-         // drawShape(lathe, skinColor, -1,1, 2,1);
-      m.restore();
-
-      m.save();
-         D = CG.mix(C,B,.5);
-         m.translate(D[0],D[1],D[2]).aimZ(CG.subtract(C,B)).scale(.03,.03,.37);
-         // drawShape(lathe, skinColor, -1,1, 2,1);
-      m.restore();
-      state.isToon = false;
-
-   m.restore();
-      /*-----------------------------------------------------------------
-        Here is where we draw avatars and controllers.
-      -----------------------------------------------------------------*/
    
+   /*-----------------------------------------------------------------
+     Here is where we draw avatars and controllers.
+   -----------------------------------------------------------------*/
+   
+
    for (let id in MR.avatars) {
       
       const avatar = MR.avatars[id];
@@ -997,7 +864,6 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
          if (MR.playerid == avatar.playerid)
             continue;
          
-         console.log(MR.playerid);
          let headsetPos = avatar.headset.position;
          let headsetRot = avatar.headset.orientation;
 
@@ -1015,7 +881,7 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
          let hpos = headsetPos.slice();
          hpos[1] += EYE_HEIGHT;
 
-         drawHeadset(hpos, headsetRot);
+         drawHeadset(hpos, headsetRot, id);
          let lpos = lcontroller.position.slice();
          lpos[1] += EYE_HEIGHT;
          let rpos = rcontroller.position.slice();
