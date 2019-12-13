@@ -715,33 +715,6 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
    }
 
     /*-----------------------------------------------------------------
-    drawTable() just happens to model the physical size and shape of the
-    tables in my lab (measured in meters). If you want to model physical
-    furniture, you will probably want to do something different.
-    -----------------------------------------------------------------*/
-
-   let drawTable = id => {
-      m.save();
-         m.translate(0, TABLE_HEIGHT - TABLE_THICKNESS/2, 0);
-         m.scale(TABLE_DEPTH/2, TABLE_THICKNESS/2, TABLE_WIDTH/2);
-         drawShape(CG.cube, [1,1,1], 0);
-      m.restore();
-      m.save();
-         let h  = (TABLE_HEIGHT - TABLE_THICKNESS) / 2;
-         let dx = (TABLE_DEPTH  - LEG_THICKNESS  ) / 2;
-         let dz = (TABLE_WIDTH  - LEG_THICKNESS  ) / 2;
-         for (let x = -dx ; x <= dx ; x += 2 * dx)
-         for (let z = -dz ; z <= dz ; z += 2 * dz) {
-            m.save();
-               m.translate(x, h, z);
-               m.scale(LEG_THICKNESS/2, h, LEG_THICKNESS/2);
-               drawShape(CG.cube, [.5,.5,.5]);
-            m.restore();
-         }
-      m.restore();
-   }
-
-    /*-----------------------------------------------------------------
     The below is just my particular "programmer art" for the size and
     shape of a controller. Feel free to create a different appearance
     for the controller. You might also want the controller appearance,
@@ -753,7 +726,6 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
     -----------------------------------------------------------------*/
 
    let drawHeadset = (position, orientation, id) => {
-      //  let P = HS.position();'
       let exists = id in gingerbreadObjs;
       
       if(!exists){
@@ -763,21 +735,6 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
       let P = position;
       m.save();
          gb.drawGingerbread(m, drawShape, P, orientation, "leftController", "rightController");
-         // m.multiply(state.avatarMatrixForward);
-         // m.translate(P[0],P[1],P[2]);
-         // m.rotateQ(orientation);
-         // m.scale(.1);
-         // m.save();
-         //    m.scale(1,1.5,1);
-         //    drawShape(CG.sphere, [0,0,0]);
-         // m.restore();
-         // for (let s = -1 ; s <= 1 ; s += 2) {
-         //    m.save();
-         //       m.translate(s*.4,.2,-.8);
-         //       m.scale(.4,.4,.1);
-         //       drawShape(CG.sphere, [10,10,10]);
-         //    m.restore();
-         // }
       m.restore();
    }
 
@@ -789,25 +746,7 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
          m.multiply(state.avatarMatrixForward);
           m.translate(P[0], P[1], P[2]);
           m.rotateQ(C.orientation());
-          /*
-            m.save();
-                m.translate(-s,0,.001);
-                m.scale(.0125,.016,.036);
-              drawShape(cube, color);
-            m.restore();
-          
-            m.save();
-                m.translate( s,0,.001);
-                m.scale(.0125,.016,.036);
-              drawShape(cube, color);
-            m.restore();
-          */
-            m.save();
-                m.translate(0,0,.025);
-                m.scale(.015,.015,.01);
-              //drawShape(cube, [0,0,0]);
-            m.restore();
-
+            
             m.save();
                 m.translate(0,0,.035);
                 m.rotateX(.5);
@@ -861,8 +800,6 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
 
 
    if (input.LC) {
-      if (isMiniature)
-         // drawHeadset(input.HS.position(), input.HS.orientation());
       m.save();
 
       let P = state.position;
@@ -889,29 +826,6 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
     world.draw(m, drawShape);
     m.restore();
 
-   // for (let n = 0 ; n < MR.objs.length ; n++) {
-   //    let obj = MR.objs[n], P = obj.position;
-   //    m.save();
-   //       m.multiply(state.avatarMatrixForward);
-
-   //       // draw world
-   //       world.draw(m, drawShape);
-   //       m.translate(P[0], P[1], P[2]);
-   //       // m.rotateQ(obj.orientation);
-   //       m.scale(.03,.03,.03);
-
-   //        m.rotateX(obj.rotateXAmount);
-          
-   //        if (obj.scale) {
-   //          m.scale(2,2,2);
-   //          drawShape(obj.shape, colors[obj.cIndex]);
-   //        } else {
-   //          drawShape(obj.shape, colors[obj.cIndex]);
-   //        }
-         
-   //    m.restore();
-   // }
-
    m.translate(0, -EYE_HEIGHT, 0);
  
     /*-----------------------------------------------------------------
@@ -927,71 +841,10 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
       drawShape(CG.cube, [1,1,1], 1,4, 2,4);
    m.restore();
 
-   m.save();
-      m.translate((HALL_WIDTH - TABLE_DEPTH) / 2, 0, 0);
-      drawTable(0);
-   m.restore();
-
-   m.save();
-      m.translate((TABLE_DEPTH - HALL_WIDTH) / 2, 0, 0);
-      drawTable(1);
-   m.restore();
-
-   // DRAW TEST SHAPE
-
-   m.save();
-      m.translate(0, 2 * TABLE_HEIGHT, (TABLE_DEPTH - HALL_WIDTH) / 2);
-      //m.aimZ([Math.cos(state.time),Math.sin(state.time),0]);
-      m.rotateY(state.time);
-      m.scale(.06,.06,.6);
-      //drawShape(lathe, [1,.2,0]);
-      m.restore();
-
-      let A = [0.2,0,0];
-      let B = [1+.4*Math.sin(2 * state.time),.4*Math.cos(2 * state.time),0];
-      let C = CG.ik(.7,.7,B,[0,-1,-2]);
-
-      m.save();
-      m.translate(-.5, 2.5 * TABLE_HEIGHT, (TABLE_DEPTH - HALL_WIDTH) / 2);
-      //m.rotateY(state.time);
-      m.save();
-         let reader = new Reader();
-         
-         
-         // m.translate(A[0],A[1],A[2]).scale(1);
-         //reader.buildAndDrawObject(head, [1,1,1],1, state,m);
-            /*
-      m.restore();
-      m.save();
-         m.translate(B[0],B[1],B[2]).scale(.07);
-         drawShape(CG.sphere, [1,1,1]);
-      m.restore();
-      m.save();
-         m.translate(C[0],C[1],C[2]).scale(.07);
-         drawShape(CG.sphere, [1,1,1]);
-      m.restore();
-      */
-      state.isToon = true;
-      let skinColor = [1,.5,.3], D;
-      m.save();
-         D = CG.mix(A,C,.5);
-         m.translate(D[0],D[1],D[2]);
-         m.aimZ(CG.subtract(A,C));
-         m.scale(.05,.05,.37);
-         // drawShape(lathe, skinColor, -1,1, 2,1);
-      m.restore();
-
-      m.save();
-         D = CG.mix(C,B,.5);
-         m.translate(D[0],D[1],D[2]).aimZ(CG.subtract(C,B)).scale(.03,.03,.37);
-         // drawShape(lathe, skinColor, -1,1, 2,1);
-      m.restore();
-      state.isToon = false;
-
-   m.restore();
-      /*-----------------------------------------------------------------
-        Here is where we draw avatars and controllers.
-      -----------------------------------------------------------------*/
+   
+   /*-----------------------------------------------------------------
+     Here is where we draw avatars and controllers.
+   -----------------------------------------------------------------*/
    
 
    for (let id in MR.avatars) {
