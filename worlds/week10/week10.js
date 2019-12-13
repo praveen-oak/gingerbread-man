@@ -21,7 +21,7 @@ const TABLE_THICKNESS  = inchesToMeters( 11/8);
 const LEG_THICKNESS    = inchesToMeters(  2.5);
 
 let enableModeler = true;
-
+let gingerbreadObjs = {};
 /*Example Grabble Object*/
 let grabbableCube = new Obj(CG.torus);
 
@@ -751,14 +751,18 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
     a selection tool, a resizing tool, a tool for drawing in the air,
     and so forth.
     -----------------------------------------------------------------*/
-    
-   let drawHeadset = (position, orientation) => {
-      //  let P = HS.position();'
-      let P = position;
 
+   let drawHeadset = (position, orientation, id) => {
+      //  let P = HS.position();'
+      let exists = id in gingerbreadObjs;
+      
+      if(!exists){
+         gingerbreadObjs[id] = new Gingerbread();
+      }
+      let gb = gingerbreadObjs[id];
+      let P = position;
       m.save();
-         let gb = new Gingerbread();
-         gb.drawGingerbread(m, drawShape, P, "leftController", "rightController");
+         gb.drawGingerbread(m, drawShape, P, orientation, "leftController", "rightController");
          // m.multiply(state.avatarMatrixForward);
          // m.translate(P[0],P[1],P[2]);
          // m.rotateQ(orientation);
@@ -989,6 +993,7 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
         Here is where we draw avatars and controllers.
       -----------------------------------------------------------------*/
    
+
    for (let id in MR.avatars) {
       
       const avatar = MR.avatars[id];
@@ -997,7 +1002,6 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
          if (MR.playerid == avatar.playerid)
             continue;
          
-         console.log(MR.playerid);
          let headsetPos = avatar.headset.position;
          let headsetRot = avatar.headset.orientation;
 
@@ -1015,7 +1019,7 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
          let hpos = headsetPos.slice();
          hpos[1] += EYE_HEIGHT;
 
-         drawHeadset(hpos, headsetRot);
+         drawHeadset(hpos, headsetRot, id);
          let lpos = lcontroller.position.slice();
          lpos[1] += EYE_HEIGHT;
          let rpos = rcontroller.position.slice();
