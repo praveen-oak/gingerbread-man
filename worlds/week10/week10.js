@@ -948,21 +948,15 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
       m.save();
       m.translate(-.5, 2.5 * TABLE_HEIGHT, (TABLE_DEPTH - HALL_WIDTH) / 2);
       //m.rotateY(state.time);
-      /*
       m.save();
-<<<<<<< HEAD
-
          let reader = new Reader();
          
          
-         m.translate(A[0],A[1],A[2]).scale(1);
+         // m.translate(A[0],A[1],A[2]).scale(1);
          let gb = new Gingerbread();
-         gb.drawGingerbread(m, drawShape, "headController", "leftController", "rightController");
+         gb.drawGingerbread(m, drawShape, A, "leftController", "rightController");
          //reader.buildAndDrawObject(head, [1,1,1],1, state,m);
-=======
-         m.translate(A[0],A[1],A[2]).scale(.07);
-         drawShape(CG.sphere, [1,1,1]);
->>>>>>> 2348bc7c510352d306ca9d73be29b2cd3f3ec285
+            /*
       m.restore();
       m.save();
          m.translate(B[0],B[1],B[2]).scale(.07);
