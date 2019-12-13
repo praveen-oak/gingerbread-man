@@ -200,10 +200,9 @@ async function setup(state) {
    const images = await imgutil.loadImagesPromise([
       getPath("textures/wood.png"),
       getPath("textures/tiles.jpg"),
-      getPath("textures/noisy_bump.jpg"),
+      // getPath("textures/noisy_bump.jpg"),
       getPath("textures/gingerbread.jpg")
    ]);
-
    let libSources = await MREditor.loadAndRegisterShaderLibrariesForLiveEditing(gl, "libs", [
       { key : "pnoise"    , path : "shaders/noise.glsl"     , foldDefault : true },
       { key : "sharedlib1", path : "shaders/sharedlib1.glsl", foldDefault : true },      
@@ -871,7 +870,7 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
       //drawShape(lathe, [1,.2,0]);
       m.restore();
 
-      let A = [0,0,0];
+      let A = [0.2,0,0];
       let B = [1+.4*Math.sin(2 * state.time),.4*Math.cos(2 * state.time),0];
       let C = CG.ik(.7,.7,B,[0,-1,-2]);
 
@@ -885,8 +884,9 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
          
          
          m.translate(A[0],A[1],A[2]).scale(1);
+         let gb = new Gingerbread();
+         gb.drawGingerbread(m, drawShape, "headController", "leftController", "rightController");
          //reader.buildAndDrawObject(head, [1,1,1],1, state,m);
-         m.scale(.04);
       m.restore();
       /*
       m.save();
@@ -906,13 +906,13 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
          m.translate(D[0],D[1],D[2]);
          m.aimZ(CG.subtract(A,C));
          m.scale(.05,.05,.37);
-         drawShape(lathe, skinColor, -1,1, 2,1);
+         // drawShape(lathe, skinColor, -1,1, 2,1);
       m.restore();
 
       m.save();
          D = CG.mix(C,B,.5);
          m.translate(D[0],D[1],D[2]).aimZ(CG.subtract(C,B)).scale(.03,.03,.37);
-         drawShape(lathe, skinColor, -1,1, 2,1);
+         // drawShape(lathe, skinColor, -1,1, 2,1);
       m.restore();
       state.isToon = false;
 
