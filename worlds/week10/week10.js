@@ -1,5 +1,8 @@
 "use strict"
 
+//import {gumdrop} from "./objects/gumdrop.js";
+
+
 /*--------------------------------------------------------------------------------
 The proportions below just happen to match the dimensions of my physical space
 and the tables in that space.
@@ -39,6 +42,9 @@ let noise = new ImprovedNoise();
 let m = new Matrix();
 
 let world = new World();
+
+let reader = new Reader();
+CG.loadSomeFiles(reader);
 
 /* 
 // add environment objects
@@ -579,10 +585,12 @@ function onStartFrame(t, state) {
     world.tick();
 }
 
-let menuX = [-.2,-.1,-.2,-.1];
-let menuY = [ .1, .1,  0,  0];
-let menuShape = [ CG.cube, CG.sphere, CG.cylinder, CG.torus ];
-let menuShapeStr = [ "cube", "sphere", "cylinder", "torus" ];
+let menuX = [-.35,-.1,-.35,-.1];
+let menuY = [ .2, .2,  0,  0];
+let menuShape = [ CG.gumdrop, CG.wreath, CG.peppermint, CG.treelimb ];
+//let menuShapeStr = [ "cube", "sphere", "cylinder", "torus" ];
+//let menuShapeStr = [ "gumdrop", "sphere", "cylinder", "torus" ];
+let menuShapeStr = [ "gumdrop", "wreath", "peppermint", "treelimb", "candycane", "sphere"];
 let menuChoice = -1;
 
 /*-----------------------------------------------------------------
@@ -601,7 +609,7 @@ let findInMenu = (mp, p) => {
       let dx = x + menuX[n];
       let dy = y - menuY[n];
       let dz = z;
-      if (dx * dx + dy * dy + dz * dz < .04 * .04)
+      if (dx * dx + dy * dy + dz * dz < .07 * .07)
          return n;
    }
    return -1;
@@ -708,7 +716,7 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
          m.save();
             m.multiply(state.avatarMatrixForward);
             m.translate(x - menuX[n], y + menuY[n], z);
-            m.scale(.03, .03, .03);
+            m.scale(.3, .3, .3);
             drawShape(menuShape[n], n == menuChoice ? [.5,1,.5] : [1,1,1]);
          m.restore();
       }
@@ -956,6 +964,7 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
          let gb = new Gingerbread();
          gb.drawGingerbread(m, drawShape, A, "leftController", "rightController");
          //reader.buildAndDrawObject(head, [1,1,1],1, state,m);
+         //reader.buildAndDrawObject(gumdrop, [1,1,1],0, state,m);
             /*
       m.restore();
       m.save();
