@@ -757,21 +757,23 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
       let P = position;
 
       m.save();
-         m.multiply(state.avatarMatrixForward);
-         m.translate(P[0],P[1],P[2]);
-         m.rotateQ(orientation);
-         m.scale(.1);
-         m.save();
-            m.scale(1,1.5,1);
-            drawShape(CG.sphere, [0,0,0]);
-         m.restore();
-         for (let s = -1 ; s <= 1 ; s += 2) {
-            m.save();
-               m.translate(s*.4,.2,-.8);
-               m.scale(.4,.4,.1);
-               drawShape(CG.sphere, [10,10,10]);
-            m.restore();
-         }
+         let gb = new Gingerbread();
+         gb.drawGingerbread(m, drawShape, P, "leftController", "rightController");
+         // m.multiply(state.avatarMatrixForward);
+         // m.translate(P[0],P[1],P[2]);
+         // m.rotateQ(orientation);
+         // m.scale(.1);
+         // m.save();
+         //    m.scale(1,1.5,1);
+         //    drawShape(CG.sphere, [0,0,0]);
+         // m.restore();
+         // for (let s = -1 ; s <= 1 ; s += 2) {
+         //    m.save();
+         //       m.translate(s*.4,.2,-.8);
+         //       m.scale(.4,.4,.1);
+         //       drawShape(CG.sphere, [10,10,10]);
+         //    m.restore();
+         // }
       m.restore();
    }
 
@@ -856,7 +858,7 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
 
    if (input.LC) {
       if (isMiniature)
-         drawHeadset(input.HS.position(), input.HS.orientation());
+         // drawHeadset(input.HS.position(), input.HS.orientation());
       m.save();
 
       let P = state.position;
@@ -953,8 +955,6 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
          
          
          // m.translate(A[0],A[1],A[2]).scale(1);
-         let gb = new Gingerbread();
-         gb.drawGingerbread(m, drawShape, A, "leftController", "rightController");
          //reader.buildAndDrawObject(head, [1,1,1],1, state,m);
             /*
       m.restore();
@@ -997,6 +997,7 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
          if (MR.playerid == avatar.playerid)
             continue;
          
+         console.log(MR.playerid);
          let headsetPos = avatar.headset.position;
          let headsetRot = avatar.headset.orientation;
 
