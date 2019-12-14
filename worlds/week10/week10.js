@@ -735,7 +735,7 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
          m.scale(1,1,1);
          m.rotateX(-Math.PI/2);
          //m.rotateZ(Date.now()*0.001);
-         drawShape(CG.house, [1,1,1], 0);
+         drawShape(CG.house, [1,1,1], 2);
       m.restore();
 
    }
