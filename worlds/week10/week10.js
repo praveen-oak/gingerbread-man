@@ -47,7 +47,7 @@ let reader = new Reader();
 CG.loadSomeFiles(reader);
 
 
-/* 
+
 // add environment objects
 let box = {
    shape : "cube",
@@ -57,7 +57,10 @@ let box = {
    texture : -1,
    textureScale : 1
 };
+
 world.addEnv(box);
+
+/*
 // add player created objects
 for (let i=-2; i<=2; i++) {
    for (let j=-2; j<=2; j++) {
@@ -377,6 +380,8 @@ function sendSpawnMessage(object){
    MR.syncClient.send(response);
 }
 
+var roomColor = [1,1,1];
+
 function onStartFrame(t, state) {
 
    /*-----------------------------------------------------------------
@@ -526,11 +531,13 @@ function onStartFrame(t, state) {
 
 
       else if (input.RC.isDown()){
-         createIcing( input.RC.tip().slice(), world);
+         var tipPos = input.RC.tip().slice();
+         createIcing(tipPos, world);
       }
-      if (input.RC.release())
+      if (input.RC.release()){
          state.isNewObj = false;
-         resetDrawingPath();
+         resetDrawingPath(world);
+      }
    }
 
    
@@ -639,6 +646,7 @@ let rotateXAmount = 0;
 let rotateYAmount = 0;
 let scale = false;
 
+
 function onDraw(t, projMat, viewMat, state, eyeIdx) {
    m.identity();
    m.rotateX(state.tiltAngle);
@@ -716,6 +724,17 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
 
       gl.drawArrays((shape == CG.cube || isAnOBJ(shape) ) ? gl.TRIANGLES : gl.TRIANGLE_STRIP, 0, shape.length / VERTEX_SIZE);
       prev_shape = shape;
+   }
+
+   let drawLocalIcingObjects = () => {
+    for (var i=0; i < icingObjs.length; i++){
+         var pos = icingObjs[i];
+         m.save();
+            m.translate(pos[0],pos[1],pos[2]);
+            m.scale(.05,.05,.05);
+            drawShape(CG.sphere,[1,1,1])
+         m.restore();
+    }
    }
 
    let drawAvatar = (avatar, pos, rot, scale, state) => {
@@ -870,6 +889,9 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
     world.draw(m, drawShape);
     m.restore();
 
+    //This draw icing objects that are in process, not the icing objects added to the world.
+    drawLocalIcingObjects();
+
 
     drawHouse();
 
@@ -887,7 +909,7 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
       let dy = isMiniature ? 0 : HALL_WIDTH/2;
       m.translate(0, dy, 0);
       m.scale(-HALL_WIDTH/2, -dy, -HALL_LENGTH/2);
-      drawShape(CG.cube, [1,1,1], 1,4, 2,4);
+      drawShape(CG.cube, roomColor, 1,4, 2,4);
    m.restore();
 
 
