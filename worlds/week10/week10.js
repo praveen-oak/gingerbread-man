@@ -770,7 +770,7 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
     and so forth.
     -----------------------------------------------------------------*/
 
-   let drawHeadset = (position, orientation, id) => {
+   let drawHeadset = (position, orientation, id, leftController, rightController) => {
       let exists = id in gingerbreadObjs;
       
       if(!exists){
@@ -779,7 +779,7 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
       let gb = gingerbreadObjs[id];
       let P = position;
       m.save();
-         gb.drawGingerbread(m, drawShape, P, orientation, "leftController", "rightController");
+         gb.drawGingerbread(m, drawShape, P, orientation, leftController, rightController);
       m.restore();
    }
 
@@ -896,7 +896,6 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
      Here is where we draw avatars and controllers.
    -----------------------------------------------------------------*/
    
-
    for (let id in MR.avatars) {
       
       const avatar = MR.avatars[id];
@@ -922,7 +921,7 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
          let hpos = headsetPos.slice();
          hpos[1] += EYE_HEIGHT;
 
-         drawHeadset(hpos, headsetRot, id);
+         drawHeadset(hpos, headsetRot, id, lcontroller, rcontroller);
          let lpos = lcontroller.position.slice();
          lpos[1] += EYE_HEIGHT;
          let rpos = rcontroller.position.slice();
