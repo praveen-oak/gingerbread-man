@@ -875,6 +875,16 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
     drawHouse();
 
 
+    // m.save();
+    //   m.translate(0, 0, -1);
+    //   // m.scale()
+    //   // m.rotateY(Math.PI);
+    //   m.rotateZ(Date.now()*.001);
+    //   drawShape(CG.head, [1,1,1], 2);
+    // m.restore();
+
+
+
    m.translate(0, -EYE_HEIGHT, 0);
  
     /*-----------------------------------------------------------------
@@ -927,8 +937,8 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
          let rpos = rcontroller.position.slice();
          rpos[1] += EYE_HEIGHT;
 
-         drawSyncController(rpos, rcontroller.orientation, [1,0,0]);
-         drawSyncController(lpos, lcontroller.orientation, [0,1,1]);
+         // drawSyncController(rpos, rcontroller.orientation, [1,0,0]);
+         // drawSyncController(lpos, lcontroller.orientation, [0,1,1]);
       }
    }
 
