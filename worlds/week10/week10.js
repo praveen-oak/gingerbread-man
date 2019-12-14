@@ -14,8 +14,8 @@ const inchesToMeters = inches => inches * 0.0254;
 const metersToInches = meters => meters / 0.0254;
 
 const EYE_HEIGHT       = inchesToMeters( 69);
-const HALL_LENGTH      = inchesToMeters(306);
-const HALL_WIDTH       = inchesToMeters(215);
+const HALL_LENGTH      = inchesToMeters(84);
+const HALL_WIDTH       = inchesToMeters(108);
 const RING_RADIUS      = 0.0425;
 const TABLE_DEPTH      = inchesToMeters( 30);
 const TABLE_HEIGHT     = inchesToMeters( 29);
@@ -750,9 +750,8 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
 
    let drawHouse = () => {
       m.save();
-         m.translate(-1,-1,-1);
-         m.translate(1, -.65, 0);
-         m.scale(1,1,1);
+         m.translate(0,-1.65,0);
+         m.scale(.7,.7,.7);
          m.rotateX(-Math.PI/2);
          //m.rotateZ(Date.now()*0.001);
          drawShape(CG.house, [1,1,1], 2);
@@ -896,15 +895,6 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
 
 
     drawHouse();
-
-
-    // m.save();
-    //   m.translate(0, 0, -1);
-    //   // m.scale()
-    //   // m.rotateY(Math.PI);
-    //   m.rotateZ(Date.now()*.001);
-    //   drawShape(CG.head, [1,1,1], 2);
-    // m.restore();
 
 
 
