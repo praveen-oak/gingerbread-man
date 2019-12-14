@@ -703,6 +703,18 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
       m.restore();
    }
 
+   let drawHouse = () => {
+      m.save();
+         m.translate(-1,-1,-1);
+         m.translate(1, -.65, 0);
+         m.scale(1,1,1);
+         m.rotateX(-Math.PI/2);
+         //m.rotateZ(Date.now()*0.001);
+         drawShape(CG.house, [1,1,1], 0);
+      m.restore();
+
+   }
+
     /*-----------------------------------------------------------------
     In my little toy geometric modeler, the pop-up menu of objects only
     appears while the right controller trigger is pressed. This is just
@@ -833,6 +845,10 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
     m.multiply(state.avatarMatrixForward);
     world.draw(m, drawShape);
     m.restore();
+
+
+    drawHouse();
+
 
    m.translate(0, -EYE_HEIGHT, 0);
  
