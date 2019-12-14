@@ -46,6 +46,7 @@ let world = new World();
 let reader = new Reader();
 CG.loadSomeFiles(reader);
 
+
 /* 
 // add environment objects
 let box = {
@@ -675,6 +676,29 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
     this if you create other kinds of shapes that are not triangle strips.
     -----------------------------------------------------------------*/
 
+
+
+// CG.loadSomeFiles = (reader) => {
+//     CG.gumdrop = reader.loadMeshData(gumdrop);
+//     CG.wreath = reader.loadMeshData(wreath);
+//     CG.candycane = reader.loadMeshData(candycane);
+//     CG.treelimb = reader.loadMeshData(treelimb);
+//     CG.peppermint = reader.loadMeshData(peppermint);
+//     CG.house = reader.loadMeshData(house);
+// }
+
+
+
+   //Checks if an obj file is being drawn
+   let isAnOBJ = (shape) =>{
+      for (var i = 0; i < CG.objList.length; i++){
+         if (shape == CG.objList[i]){
+            return true;
+         }
+      }
+      return false;
+   }
+
    let drawShape = (shape, color, texture, textureScale) => {
       gl.uniform4fv(state.uColorLoc, color.length == 4 ? color : color.concat([1]));
       gl.uniformMatrix4fv(state.uModelLoc, false, m.value());
@@ -689,7 +713,8 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
          gl.cullFace(gl.BACK);
          gl.uniform1f (state.uToonLoc, 0);
       }
-      gl.drawArrays(shape == CG.cube ? gl.TRIANGLES : gl.TRIANGLE_STRIP, 0, shape.length / VERTEX_SIZE);
+
+      gl.drawArrays((shape == CG.cube || isAnOBJ(shape) ) ? gl.TRIANGLES : gl.TRIANGLE_STRIP, 0, shape.length / VERTEX_SIZE);
       prev_shape = shape;
    }
 
