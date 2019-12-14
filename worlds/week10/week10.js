@@ -214,7 +214,8 @@ async function setup(state) {
       getPath("textures/wood.png"),
       getPath("textures/tiles.jpg"),
       // getPath("textures/noisy_bump.jpg"),
-      getPath("textures/gingerbread.jpg")
+      getPath("textures/gingerbread.jpg"),
+      getPath("textures/sky.jpg")
    ]);
    let libSources = await MREditor.loadAndRegisterShaderLibrariesForLiveEditing(gl, "libs", [
       { key : "pnoise"    , path : "shaders/noise.glsl"     , foldDefault : true },
@@ -919,7 +920,7 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
       let dy = isMiniature ? 0 : HALL_WIDTH/2;
       m.translate(0, dy, 0);
       m.scale(-HALL_WIDTH/2, -dy, -HALL_LENGTH/2);
-      drawShape(CG.cube, roomColor, 1,4, 2,4);
+      drawShape(CG.cube, roomColor, 3);
    m.restore();
 
 

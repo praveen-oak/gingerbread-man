@@ -25,6 +25,7 @@ uniform float uTexScale;
 uniform sampler2D uTex0;
 uniform sampler2D uTex1;
 uniform sampler2D uTex2;
+uniform sampler2D uTex3;
 
 out vec4 fragColor;    // RESULT WILL GO HERE
 
@@ -62,6 +63,7 @@ void main() {
     vec4 texture0 = texture(uTex0, vUV * uTexScale);
     vec4 texture1 = texture(uTex1, vUV * uTexScale);
     vec4 texture2 = texture(uTex2, vUV * uTexScale);
+    vec4 texture3 = texture(uTex3, vUV * uTexScale);
 
     vec3 ambient = .1 * uColor.rgb;
     vec3 diffuse = .5 * uColor.rgb;
@@ -78,6 +80,8 @@ void main() {
     if (uBumpIndex == 0) normal = bumpTexture(normal, texture(uTex0, vUV * uBumpScale));
     if (uBumpIndex == 1) normal = bumpTexture(normal, texture(uTex1, vUV * uBumpScale));
     if (uBumpIndex == 2) normal = bumpTexture(normal, texture(uTex2, vUV * uBumpScale));
+    if (uBumpIndex == 3) normal = bumpTexture(normal, texture(uTex3, vUV * uBumpScale));
+
 
     vec3 color = ambient;
     color += phong(Ldir[0], Lrgb[0], normal, diffuse, specular, p);
@@ -89,6 +93,7 @@ void main() {
     if (uTexIndex == 0) fragColor *= texture(uTex0, vUV * uTexScale);
     if (uTexIndex == 1) fragColor *= texture(uTex1, vUV * uTexScale);
     if (uTexIndex == 2) fragColor *= texture(uTex2, vUV * uTexScale);
+    if (uTexIndex == 3) fragColor *= texture(uTex3, vUV * uTexScale);
 }
 
 
