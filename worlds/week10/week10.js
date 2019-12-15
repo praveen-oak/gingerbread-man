@@ -354,7 +354,7 @@ async function setup(state) {
    track of objects that need to be synchronized.
    ************************************************************************/
 
-   MR.objs.push(grabbableCube);
+   //MR.objs.push(grabbableCube);
    grabbableCube.position    = [0,0,-0.5].slice();
    grabbableCube.orientation = [1,0,0,1].slice();
    grabbableCube.uid = 0;
@@ -884,11 +884,26 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
     to the user doing things with the controllers), that logic would
     need to go into onStartFrame(), not here.
     -----------------------------------------------------------------*/
-
+    
     m.save();
     m.multiply(state.avatarMatrixForward);
     world.draw(m, drawShape);
     m.restore();
+   
+
+    /*
+    for (let n = 0 ; n < MR.objs.length ; n++) {
+      let obj = MR.objs[n], P = obj.position;
+      m.save();
+         m.multiply(state.avatarMatrixForward);
+         m.translate(P[0], P[1], P[2]);
+         m.rotateQ(obj.orientation);
+         m.scale(.3,.3,.3);
+         drawShape(obj.shape, colors[obj.cIndex]);
+         
+      m.restore();
+   }
+   */
 
     //This draw icing objects that are in process, not the icing objects added to the world.
     drawLocalIcingObjects();
