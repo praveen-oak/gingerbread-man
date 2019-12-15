@@ -523,7 +523,7 @@ function onStartFrame(t, state) {
             shape : menuShapeStr[shapeChoice],
             free : true,
             pos : [obj.position[0], obj.position[1], obj.position[2]],
-            size : [.03,.03,.03],
+            size : [.3,.3,.3],
             color : colors[obj.cIndex]
          }
 
