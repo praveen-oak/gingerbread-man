@@ -49,16 +49,16 @@ CG.loadSomeFiles(reader);
 
 
 // add environment objects
-let box = {
-   shape : "cube",
-   pos : [0, 0, 0],
-   size : [1.2, 1.2, 1.2],
-   color : [1, 0, 0],
-   texture : -1,
-   textureScale : 1
-};
+// let box = {
+//    shape : "cube",
+//    pos : [0, 0, 0],
+//    size : [1.2, 1.2, 1.2],
+//    color : [1, 0, 0],
+//    texture : -1,
+//    textureScale : 1
+// };
 
-world.addEnv(box);
+// world.addEnv(box);
 
 /*
 // add player created objects
