@@ -354,7 +354,7 @@ async function setup(state) {
    track of objects that need to be synchronized.
    ************************************************************************/
 
-   MR.objs.push(grabbableCube);
+   //MR.objs.push(grabbableCube);
    grabbableCube.position    = [0,0,-0.5].slice();
    grabbableCube.orientation = [1,0,0,1].slice();
    grabbableCube.uid = 0;
@@ -596,10 +596,10 @@ function onStartFrame(t, state) {
 
 let menuX = [-.35,-.1,-.35,-.1];
 let menuY = [ .2, .2,  0,  0];
-let menuShape = [ CG.gumdrop, CG.wreath, CG.peppermint, CG.treelimb ];
+let menuShape = [ CG.gumdrop, CG.gummybear, CG.candystrip, CG.treelimb ];
 //let menuShapeStr = [ "cube", "sphere", "cylinder", "torus" ];
 //let menuShapeStr = [ "gumdrop", "sphere", "cylinder", "torus" ];
-let menuShapeStr = [ "gumdrop", "wreath", "peppermint", "treelimb", "candycane", "sphere"];
+let menuShapeStr = [ "gumdrop", "wreath", "peppermint", "treelimb", "candycane", "sphere", "gummybear", "candystrip"];
 let menuChoice = -1;
 
 /*-----------------------------------------------------------------
@@ -773,6 +773,9 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
             m.multiply(state.avatarMatrixForward);
             m.translate(x - menuX[n], y + menuY[n], z);
             m.scale(.3, .3, .3);
+            if (n == 1) {
+               m.scale(.1,.1,.1);
+            }
             drawShape(menuShape[n], n == menuChoice ? [.5,1,.5] : [1,1,1]);
          m.restore();
       }
@@ -884,11 +887,29 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
     to the user doing things with the controllers), that logic would
     need to go into onStartFrame(), not here.
     -----------------------------------------------------------------*/
-
+    /*
     m.save();
     m.multiply(state.avatarMatrixForward);
     world.draw(m, drawShape);
     m.restore();
+   */
+
+    
+    for (let n = 0 ; n < MR.objs.length ; n++) {
+      let obj = MR.objs[n], P = obj.position;
+      m.save();
+         m.multiply(state.avatarMatrixForward);
+         m.translate(P[0], P[1], P[2]);
+         m.rotateQ(obj.orientation);
+         m.scale(.3,.3,.3);
+         if (obj.shape == CG.gummybear) {
+            m.scale(.05,.05,.05);
+         }
+         drawShape(obj.shape, colors[obj.cIndex]);
+         
+      m.restore();
+   }
+   
 
     //This draw icing objects that are in process, not the icing objects added to the world.
     drawLocalIcingObjects();
@@ -918,8 +939,8 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
   m.save();
     m.translate(0,0,0);
     m.scale(-20,-20,-20);
-    m.rotateX(Math.PI/2);
-    drawShape(CG.sphere, roomColor,3);
+    m.rotateX(Math.PI);
+    drawShape(CG.halfsphere, roomColor,3);
   m.restore();
 
   //draw ground
