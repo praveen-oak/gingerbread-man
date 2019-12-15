@@ -906,11 +906,29 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
     is a useful general trick for creating interiors.
     -----------------------------------------------------------------*/
 
+   // m.save();
+   //    let dy = isMiniature ? 0 : HALL_WIDTH/2;
+   //    m.translate(0, dy, 0);
+   //    m.scale(-HALL_WIDTH/2, -dy, -HALL_LENGTH/2);
+   //    drawShape(CG.cube, roomColor, 3);
+   // m.restore();
+
+
+  // Draw inside out sphere as sky
+  m.save();
+    m.translate(0,0,0);
+    m.scale(-20,-20,-20);
+    m.rotateX(Math.PI/2);
+    drawShape(CG.sphere, roomColor,3);
+  m.restore();
+
+  //draw ground
    m.save();
       let dy = isMiniature ? 0 : HALL_WIDTH/2;
-      m.translate(0, dy, 0);
-      m.scale(-HALL_WIDTH/2, -dy, -HALL_LENGTH/2);
-      drawShape(CG.cube, roomColor, 3);
+      m.translate(0, -dy+.001, 0);
+      m.scale(20, dy, 20);
+      m.rotateX(Math.PI/2);
+      drawShape(CG.cube, [1,1,1],3);
    m.restore();
 
 
