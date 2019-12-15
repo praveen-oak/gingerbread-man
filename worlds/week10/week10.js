@@ -918,8 +918,8 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
   m.save();
     m.translate(0,0,0);
     m.scale(-20,-20,-20);
-    m.rotateX(Math.PI/2);
-    drawShape(CG.sphere, roomColor,3);
+    m.rotateX(Math.PI);
+    drawShape(CG.halfsphere, roomColor,3);
   m.restore();
 
   //draw ground
