@@ -182,12 +182,29 @@ MR.syncClient.eventBus.subscribe("spawn", (json) => {
 
     if (success) {
         console.log("object created ", json);
+        console.log(json["state"]["objArgs"]);
         // add to MR.objs
+        world.add(json["state"]["objArgs"]);
+
     } else {
         console.log("failed spawn message", json);
     }
 
 });
+
+// MR.syncClient.eventBus.subscribe("myObject", (json) => {
+
+//     const success = json["success"];
+
+//     if (success) {
+//         console.log("my object created ", json);
+//         // add to MR.objs
+//         // world.add(json["objArgs"]);
+//     } else {
+//         console.log("failed spawn message", json);
+//     }
+
+// });
 
 MR.syncClient.eventBus.subscribe("object", (json) => {
     const success = json["success"];
