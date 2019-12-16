@@ -26,6 +26,7 @@ uniform sampler2D uTex0;
 uniform sampler2D uTex1;
 uniform sampler2D uTex2;
 uniform sampler2D uTex3;
+uniform sampler2D uTex4;
 
 out vec4 fragColor;    // RESULT WILL GO HERE
 
@@ -64,6 +65,7 @@ void main() {
     vec4 texture1 = texture(uTex1, vUV * uTexScale);
     vec4 texture2 = texture(uTex2, vUV * uTexScale);
     vec4 texture3 = texture(uTex3, vUV * uTexScale);
+    vec4 texture4 = texture(uTex4, vUV * uTexScale);
 
     vec3 ambient = .4 * uColor.rgb;
     vec3 diffuse = .5 * uColor.rgb;
@@ -81,7 +83,7 @@ void main() {
     if (uBumpIndex == 1) normal = bumpTexture(normal, texture(uTex1, vUV * uBumpScale));
     if (uBumpIndex == 2) normal = bumpTexture(normal, texture(uTex2, vUV * uBumpScale));
     if (uBumpIndex == 3) normal = bumpTexture(normal, texture(uTex3, vUV * uBumpScale));
-
+    if (uBumpIndex == 4) normal = bumpTexture(normal, texture(uTex4, vUV * uBumpScale));
 
     vec3 color = ambient;
     color += phong(Ldir[0], Lrgb[0], normal, diffuse, specular, p);
@@ -94,14 +96,17 @@ void main() {
     if (uTexIndex == 1) fragColor *= texture(uTex1, vUV * uTexScale);
     if (uTexIndex == 2) fragColor *= texture(uTex2, vUV * uTexScale);
     if (uTexIndex == 3) fragColor *= texture(uTex3, vUV * uTexScale);
-   //       if (uTexIndex == 3){
-   //       // fragColor *= texture(uTex3, vUV * uTexScale);
-   //       float n = .1 + .1 * noize(1000. * vPos);
-   //       float m = .2 + .1 * noize(10. * vPos);
-   //       float o = n+m;
-   //       color += vec3(o,o,o);
-   //       fragColor = vec4(sqrt(color.rgb) * (uToon == 0. ? 1. : 0.), uColor.a);
-   //   }
+
+    // if (uTexIndex == 3){
+    //      // fragColor *= texture(uTex3, vUV * uTexScale);
+    //      float n = .1 + .1 * noize(1000. * vPos);
+    //      float m = .2 + .1 * noize(10. * vPos);
+    //      float o = n+m;
+    //      color += vec3(o,o,o);
+    //      fragColor = vec4(sqrt(color.rgb) * (uToon == 0. ? 1. : 0.), uColor.a);
+    //  }
+     if (uTexIndex == 4) fragColor *= texture(uTex4, vUV * uTexScale);
+
 
 }
 
