@@ -41,7 +41,6 @@ const WOOD = 0,
 let noise = new ImprovedNoise();
 let m = new Matrix();
 
-let world = new World();
 
 let reader = new Reader();
 CG.loadSomeFiles(reader);
