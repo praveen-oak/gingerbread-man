@@ -495,7 +495,7 @@ function onStartFrame(t, state) {
          //Create lock object for each new obj.
          obj.lock = new Lock();
 
-         obj.color = 0;
+         obj.color = colors[Math.floor(Math.random() * 5)];
          obj.rotateXAmount = 0;
          obj.rotateYAmount = 0;
          obj.scale = false;
@@ -524,7 +524,7 @@ function onStartFrame(t, state) {
             free : true,
             pos : [obj.position[0], obj.position[1], obj.position[2]],
             size : [.3,.3,.3],
-            color : colors[obj.cIndex]
+            color : obj.color
          }
 
          world.add(args);
@@ -641,7 +641,7 @@ function Obj(shape, rotateXAmount, rotateYAmount, color, scale, cIndex) {
 };
 
 
-let colors = [[0,0,0],[1,0,0],[0,1,0],[0,0,1],[.5,.5,.5]];
+let colors = [[1,.1,.2],[0,.9,.2],[.9,0.,.9],[1.,.8,0.],[1.,.3,0.]];
 let idx = 0;
 let rotateXAmount = 0;
 let rotateYAmount = 0;
