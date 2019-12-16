@@ -353,12 +353,12 @@ async function setup(state) {
    track of objects that need to be synchronized.
    ************************************************************************/
 
-   MR.objs.push(grabbableCube);
-   grabbableCube.position    = [0,0,-0.5].slice();
-   grabbableCube.orientation = [1,0,0,1].slice();
-   grabbableCube.uid = 0;
-   grabbableCube.lock = new Lock();
-   sendSpawnMessage(grabbableCube);
+   // MR.objs.push(grabbableCube);
+   // grabbableCube.position    = [0,0,-0.5].slice();
+   // grabbableCube.orientation = [1,0,0,1].slice();
+   // grabbableCube.uid = 0;
+   // grabbableCube.lock = new Lock();
+   // sendSpawnMessage(grabbableCube);
 }
 
 /************************************************************************
@@ -483,7 +483,7 @@ function onStartFrame(t, state) {
                //Should you want to support grabbing, refer to the
                //above example in setup()
             MR.objs.push(newObject);
-               sendSpawnMessage(newObject);
+               // sendSpawnMessage(newObject);
          }
 
       }
@@ -526,7 +526,20 @@ function onStartFrame(t, state) {
             color : colors[obj.cIndex]
          }
 
-         world.add(args);
+        const response =
+        {
+           type: "spawn",
+           uid: world.count, //MR.objs[i].uid,
+           state: {
+              objArgs : args
+           },
+           lockid: MR.playerid,
+        };
+        
+        MR.syncClient.send(response);
+        world.add(args);
+        state.isNewObj = false;
+         
       }
 
 
@@ -580,14 +593,14 @@ function onStartFrame(t, state) {
     a user has already lost ownership over by letting go
     -----------------------------------------------------------------*/
 
-    releaseLocks(state);
+   //  releaseLocks(state);
 
     /*-----------------------------------------------------------------
     This function checks for intersection and if user has ownership over 
     object then sends a data stream of position and orientation.
     -----------------------------------------------------------------*/
 
-    pollGrab(state);
+   //  pollGrab(state);
 
     // let objects drop by gravity
     world.tick();

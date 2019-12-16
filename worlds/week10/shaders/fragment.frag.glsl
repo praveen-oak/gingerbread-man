@@ -94,14 +94,14 @@ void main() {
     if (uTexIndex == 1) fragColor *= texture(uTex1, vUV * uTexScale);
     if (uTexIndex == 2) fragColor *= texture(uTex2, vUV * uTexScale);
     if (uTexIndex == 3) fragColor *= texture(uTex3, vUV * uTexScale);
-         if (uTexIndex == 3){
-         // fragColor *= texture(uTex3, vUV * uTexScale);
-         float n = .1 + .1 * noize(1000. * vPos);
-         float m = .2 + .1 * noize(10. * vPos);
-         float o = n+m;
-         color += vec3(o,o,o);
-         fragColor = vec4(sqrt(color.rgb) * (uToon == 0. ? 1. : 0.), uColor.a);
-     }
+   //       if (uTexIndex == 3){
+   //       // fragColor *= texture(uTex3, vUV * uTexScale);
+   //       float n = .1 + .1 * noize(1000. * vPos);
+   //       float m = .2 + .1 * noize(10. * vPos);
+   //       float o = n+m;
+   //       color += vec3(o,o,o);
+   //       fragColor = vec4(sqrt(color.rgb) * (uToon == 0. ? 1. : 0.), uColor.a);
+   //   }
 
 }
 
