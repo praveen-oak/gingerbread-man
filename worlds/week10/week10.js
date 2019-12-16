@@ -543,7 +543,7 @@ function onStartFrame(t, state) {
       }
 
 
-      else if (input.RC.isDown()){
+      else if (input.RC.isDown() && !input.LC.isDown()){
          var tipPos = input.RC.tip().slice();
          createIcing(tipPos);
       }
@@ -611,7 +611,7 @@ let menuY = [ .2, .2,  0,  0];
 let menuShape = [ CG.gumdrop, CG.candycane, CG.gummybear, CG.ornament ];
 //let menuShapeStr = [ "cube", "sphere", "cylinder", "torus" ];
 //let menuShapeStr = [ "gumdrop", "sphere", "cylinder", "torus" ];
-let menuShapeStr = [ "gumdrop", "candycane", "gummybear", "ornament", "candycane", "sphere", "treelimb"];
+let menuShapeStr = [ "gumdrop", "candycane", "gummybear", "ornament", "candycane", "sphere", "icingSphere", "treelimb"];
 let menuChoice = -1;
 
 /*-----------------------------------------------------------------
