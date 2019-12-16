@@ -526,6 +526,11 @@ function onStartFrame(t, state) {
             color : obj.color
          }
 
+
+         if (menuShapeStr[shapeChoice] == "candycane"){
+            args.texture = 4;
+         } 
+
         const response =
         {
            type: "spawn",
@@ -952,6 +957,25 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
       m.scale(20, EYE_HEIGHT, 20);
       m.rotateX(Math.PI/2);
       drawShape(CG.cube, [1,1,1],3);
+   m.restore();
+
+
+
+  //draw ground
+   m.save();
+      
+      for (var i =0; i< 12; i++){
+         m.rotateY(Math.PI/6);
+         m.save();
+         m.translate(0, 1.5, -10);
+         m.scale(.2,.2,.2);
+         var n = i % 3;
+         m.rotateZ(Math.PI/2+n*.1);
+
+         drawShape(CG.candycane, [1,0,.1],4);
+         m.restore();
+      }
+      
    m.restore();
 
 
