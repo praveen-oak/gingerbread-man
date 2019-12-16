@@ -596,10 +596,10 @@ function onStartFrame(t, state) {
 
 let menuX = [-.35,-.1,-.35,-.1];
 let menuY = [ .2, .2,  0,  0];
-let menuShape = [ CG.gumdrop, CG.wreath, CG.peppermint, CG.treelimb ];
+let menuShape = [ CG.gumdrop, CG.candycane, CG.gummybear, CG.treelimb ];
 //let menuShapeStr = [ "cube", "sphere", "cylinder", "torus" ];
 //let menuShapeStr = [ "gumdrop", "sphere", "cylinder", "torus" ];
-let menuShapeStr = [ "gumdrop", "wreath", "peppermint", "treelimb", "candycane", "sphere"];
+let menuShapeStr = [ "gumdrop", "candycane", "gummybear", "treelimb", "candycane", "sphere"];
 let menuChoice = -1;
 
 /*-----------------------------------------------------------------
@@ -773,6 +773,13 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
             m.multiply(state.avatarMatrixForward);
             m.translate(x - menuX[n], y + menuY[n], z);
             m.scale(.3, .3, .3);
+            if (n==1) {
+               m.rotateZ(Math.PI/2);
+               m.scale(.05,.05,.05);
+            }
+            if (n==2) {
+               m.scale(.07,.07,.07);
+            }
             drawShape(menuShape[n], n == menuChoice ? [.5,1,.5] : [1,1,1]);
          m.restore();
       }
