@@ -932,8 +932,8 @@ function myDraw(t, projMat, viewMat, state, eyeIdx, isMiniature) {
   //draw ground
    m.save();
       let dy = isMiniature ? 0 : HALL_WIDTH/2;
-      m.translate(0, -dy+.001, 0);
-      m.scale(20, dy, 20);
+      m.translate(0, -EYE_HEIGHT, 0);
+      m.scale(20, EYE_HEIGHT, 20);
       m.rotateX(Math.PI/2);
       drawShape(CG.cube, [1,1,1],3);
    m.restore();
