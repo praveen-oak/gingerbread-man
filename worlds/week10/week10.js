@@ -545,11 +545,11 @@ function onStartFrame(t, state) {
 
       else if (input.RC.isDown()){
          var tipPos = input.RC.tip().slice();
-         createIcing(tipPos, world);
+         createIcing(tipPos);
       }
       if (input.RC.release()){
          state.isNewObj = false;
-         resetDrawingPath(world);
+         resetDrawingPath();
       }
    }
 
